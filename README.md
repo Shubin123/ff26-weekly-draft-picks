@@ -2,7 +2,7 @@
 
 A weekly **12-team PPR snake-draft board** for the 2026 NFL season. It's built from a mix of older Kaggle datasets and live 2026 nflverse data. A stacked ensemble of statistical models produces the projections. Everything is backtested with a rolling origin over every season from 2015 to 2026.
 
-**Live board:** https://shubin123.github.io/ff26-weekly-draft-picks/
+**Live board:** https://shubin123.github.io/ff26-weekly-draft-picks/ · **Week 5 gist:** https://gist.github.com/Shubin123/d52acafd601c738d2d7fc46fbb11005b
 
 Each week you get:
 
