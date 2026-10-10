@@ -18,16 +18,16 @@ These are the goal metric. Each week a 12-team draft is run once from every slot
 
 | Strategy | Win rate vs field 2015–25 | Pts over field 2015–25 | Win rate 2026 wk 1–4 |
 |---|---|---|---|
-| **Stacked ensemble** | **72.1%** | **+19.4** | **87.7%** |
-| LightGBM | 69.0% | +17.3 | 78.8% |
+| **Stacked ensemble** | **72.6%** | **+20.3** | **81.8%** |
+| LightGBM | 69.2% | +16.7 | 72.9% |
 | Ridge (per position) | 69.7% | +17.0 | 71.8% |
-| XGBoost (Tweedie) | 68.8% | +17.7 | 84.7% |
+| XGBoost (Tweedie) | 69.0% | +17.7 | 74.4% |
 | Empirical Bayes | 61.8% | +9.9 | 62.9% |
 | EWMA | 58.9% | +7.6 | 71.2% |
 | Season average (field) | 50.0% | 0 | 50.0% |
 | Oracle (hindsight ceiling) | 100% | +123 | 100% |
 
-The ensemble beats the consensus field in every individual season: 2015 0.74 · 2016 0.65 · 2017 0.78 · 2018 0.78 · 2019 0.80 · 2020 0.59 · 2021 0.76 · 2022 0.71 · 2023 0.72 · 2024 0.66 · 2025 0.74 · 2026 0.88.
+The ensemble beats the consensus field in every individual season: 2015 0.71 · 2016 0.70 · 2017 0.75 · 2018 0.80 · 2019 0.78 · 2020 0.63 · 2021 0.73 · 2022 0.76 · 2023 0.73 · 2024 0.68 · 2025 0.72 · 2026 0.82.
 
 ### Projection accuracy
 
@@ -35,10 +35,10 @@ These numbers cover players who played (PPR points per game).
 
 | Model | MAE 2015–25 | Spearman 2015–25 | MAE 2026 | Spearman 2026 |
 |---|---|---|---|---|
-| **Stacked ensemble** | **5.07** | **0.515** | 4.68 | 0.571 |
+| **Stacked ensemble** | **5.07** | **0.515** | **4.68** | **0.574** |
 | Ridge | 5.12 | 0.511 | 4.73 | 0.570 |
-| XGBoost Tweedie | 5.10 | 0.503 | **4.67** | **0.578** |
-| LightGBM | 5.13 | 0.503 | 4.74 | 0.562 |
+| XGBoost Tweedie | 5.10 | 0.505 | 4.68 | 0.574 |
+| LightGBM | 5.13 | 0.504 | 4.74 | 0.564 |
 | Empirical Bayes | 5.22 | 0.479 | 4.93 | 0.521 |
 | EWMA | 5.22 | 0.481 | 4.77 | 0.529 |
 | Season average | 5.38 | 0.462 | 5.20 | 0.507 |
@@ -112,4 +112,5 @@ A GitHub Action (`.github/workflows/weekly.yml`) rebuilds the board every Tuesda
 - **Week-1 team assignments.** These use the player's last known team, so offseason moves can be wrong for week 1.
 - **No in-season refit.** 2026 projections update through features as new games arrive, but the models themselves are not retrained mid-season. That keeps 2026 a true out-of-sample test.
 - **Scoring.** Fumbles lost and 2-point conversions are left out so every source is scored the same way.
+- **Reproducibility.** The numbers above come from the GitHub Actions run (Python 3.12). A local run on Python 3.14 with newer LightGBM/XGBoost gave the same model ranking but slightly different figures, for example a 2026 ensemble win rate of 87.7% instead of 81.8%. Tree models fitted with multiple threads are not bit-for-bit reproducible across library versions.
 - **Week 5 sample.** The week-5 board was produced before Sunday's games. Only TB @ DAL can be scored so far.
