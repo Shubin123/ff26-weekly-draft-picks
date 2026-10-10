@@ -2,123 +2,123 @@
  "accuracy_all": {
   "mae": {
    "eb": 5.191,
-   "ensemble": 5.04,
+   "ensemble": 5.038,
    "ewma": 5.186,
    "lgbm": 5.101,
    "naive": 5.36,
    "ridge": 5.088,
-   "xgb": 5.064
+   "xgb": 5.06
   },
   "rmse": {
    "eb": 6.892,
    "ensemble": 6.71,
    "ewma": 6.959,
-   "lgbm": 6.779,
+   "lgbm": 6.782,
    "naive": 7.28,
    "ridge": 6.747,
-   "xgb": 6.824
+   "xgb": 6.816
   },
   "r2": {
    "eb": 0.316,
    "ensemble": 0.351,
    "ewma": 0.302,
-   "lgbm": 0.338,
+   "lgbm": 0.337,
    "naive": 0.237,
    "ridge": 0.344,
-   "xgb": 0.329
+   "xgb": 0.331
   },
   "spearman": {
    "eb": 0.482,
-   "ensemble": 0.519,
+   "ensemble": 0.52,
    "ewma": 0.485,
-   "lgbm": 0.508,
+   "lgbm": 0.509,
    "naive": 0.466,
    "ridge": 0.516,
-   "xgb": 0.509
+   "xgb": 0.511
   },
   "topk_hit": {
    "eb": 0.52,
-   "ensemble": 0.538,
+   "ensemble": 0.536,
    "ewma": 0.519,
-   "lgbm": 0.528,
+   "lgbm": 0.526,
    "naive": 0.507,
    "ridge": 0.536,
-   "xgb": 0.528
+   "xgb": 0.529
   }
  },
  "accuracy_hist": {
   "mae": {
    "eb": 5.215,
-   "ensemble": 5.073,
+   "ensemble": 5.07,
    "ewma": 5.224,
-   "lgbm": 5.134,
+   "lgbm": 5.133,
    "naive": 5.375,
    "ridge": 5.12,
-   "xgb": 5.099
+   "xgb": 5.095
   },
   "rmse": {
    "eb": 6.927,
-   "ensemble": 6.747,
+   "ensemble": 6.746,
    "ewma": 6.999,
-   "lgbm": 6.82,
+   "lgbm": 6.821,
    "naive": 7.274,
    "ridge": 6.781,
-   "xgb": 6.86
+   "xgb": 6.85
   },
   "r2": {
    "eb": 0.308,
    "ensemble": 0.344,
    "ewma": 0.294,
-   "lgbm": 0.33,
+   "lgbm": 0.329,
    "naive": 0.237,
    "ridge": 0.337,
-   "xgb": 0.322
+   "xgb": 0.324
   },
   "spearman": {
    "eb": 0.479,
    "ensemble": 0.515,
    "ewma": 0.481,
-   "lgbm": 0.503,
+   "lgbm": 0.504,
    "naive": 0.462,
    "ridge": 0.511,
-   "xgb": 0.503
+   "xgb": 0.505
   },
   "topk_hit": {
    "eb": 0.523,
-   "ensemble": 0.539,
+   "ensemble": 0.538,
    "ewma": 0.522,
-   "lgbm": 0.529,
+   "lgbm": 0.527,
    "naive": 0.511,
    "ridge": 0.538,
-   "xgb": 0.53
+   "xgb": 0.531
   }
  },
  "draft_all": {
   "points": {
    "eb": 103.798,
-   "ensemble": 112.999,
+   "ensemble": 113.738,
    "ewma": 101.958,
-   "lgbm": 111.097,
+   "lgbm": 110.379,
    "naive": 94.403,
    "oracle": 213.348,
    "ridge": 110.652,
-   "xgb": 111.518
+   "xgb": 111.374
   },
   "margin": {
    "eb": 10.041,
-   "ensemble": 19.681,
+   "ensemble": 20.496,
    "ewma": 7.839,
-   "lgbm": 17.459,
+   "lgbm": 16.688,
    "naive": -0.0,
    "oracle": 123.28,
    "ridge": 17.092,
-   "xgb": 17.938
+   "xgb": 17.793
   },
   "win_rate": {
    "eb": 0.619,
-   "ensemble": 0.724,
+   "ensemble": 0.728,
    "ewma": 0.592,
-   "lgbm": 0.692,
+   "lgbm": 0.693,
    "naive": 0.5,
    "oracle": 1.0,
    "ridge": 0.698,
@@ -128,65 +128,65 @@
  "draft_hist": {
   "points": {
    "eb": 103.682,
-   "ensemble": 112.67,
+   "ensemble": 113.498,
    "ewma": 101.718,
-   "lgbm": 110.916,
+   "lgbm": 110.315,
    "naive": 94.363,
    "oracle": 213.353,
    "ridge": 110.546,
-   "xgb": 111.26
+   "xgb": 111.224
   },
   "margin": {
    "eb": 9.949,
-   "ensemble": 19.374,
+   "ensemble": 20.288,
    "ewma": 7.621,
-   "lgbm": 17.325,
+   "lgbm": 16.662,
    "naive": -0.0,
    "oracle": 123.332,
    "ridge": 17.021,
-   "xgb": 17.707
+   "xgb": 17.688
   },
   "win_rate": {
    "eb": 0.618,
-   "ensemble": 0.721,
+   "ensemble": 0.726,
    "ewma": 0.589,
-   "lgbm": 0.69,
+   "lgbm": 0.692,
    "naive": 0.5,
    "oracle": 1.0,
    "ridge": 0.697,
-   "xgb": 0.688
+   "xgb": 0.69
   }
  },
  "draft_current": {
   "points": {
    "eb": 109.36,
-   "ensemble": 128.794,
+   "ensemble": 125.258,
    "ewma": 113.495,
-   "lgbm": 119.8,
+   "lgbm": 113.438,
    "naive": 96.302,
    "oracle": 213.078,
    "ridge": 115.721,
-   "xgb": 123.925
+   "xgb": 118.548
   },
   "margin": {
    "eb": 14.424,
-   "ensemble": 34.39,
+   "ensemble": 30.468,
    "ewma": 18.304,
-   "lgbm": 23.919,
+   "lgbm": 17.96,
    "naive": -0.0,
    "oracle": 120.747,
    "ridge": 20.476,
-   "xgb": 28.992
+   "xgb": 22.841
   },
   "win_rate": {
    "eb": 0.629,
-   "ensemble": 0.877,
+   "ensemble": 0.818,
    "ewma": 0.712,
-   "lgbm": 0.788,
+   "lgbm": 0.729,
    "naive": 0.5,
    "oracle": 1.0,
    "ridge": 0.718,
-   "xgb": 0.847
+   "xgb": 0.744
   }
  }
 }
