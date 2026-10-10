@@ -1,0 +1,192 @@
+{
+ "accuracy_all": {
+  "mae": {
+   "eb": 5.191,
+   "ensemble": 5.04,
+   "ewma": 5.186,
+   "lgbm": 5.101,
+   "naive": 5.36,
+   "ridge": 5.088,
+   "xgb": 5.064
+  },
+  "rmse": {
+   "eb": 6.892,
+   "ensemble": 6.71,
+   "ewma": 6.959,
+   "lgbm": 6.779,
+   "naive": 7.28,
+   "ridge": 6.747,
+   "xgb": 6.824
+  },
+  "r2": {
+   "eb": 0.316,
+   "ensemble": 0.351,
+   "ewma": 0.302,
+   "lgbm": 0.338,
+   "naive": 0.237,
+   "ridge": 0.344,
+   "xgb": 0.329
+  },
+  "spearman": {
+   "eb": 0.482,
+   "ensemble": 0.519,
+   "ewma": 0.485,
+   "lgbm": 0.508,
+   "naive": 0.466,
+   "ridge": 0.516,
+   "xgb": 0.509
+  },
+  "topk_hit": {
+   "eb": 0.52,
+   "ensemble": 0.538,
+   "ewma": 0.519,
+   "lgbm": 0.528,
+   "naive": 0.507,
+   "ridge": 0.536,
+   "xgb": 0.528
+  }
+ },
+ "accuracy_hist": {
+  "mae": {
+   "eb": 5.215,
+   "ensemble": 5.073,
+   "ewma": 5.224,
+   "lgbm": 5.134,
+   "naive": 5.375,
+   "ridge": 5.12,
+   "xgb": 5.099
+  },
+  "rmse": {
+   "eb": 6.927,
+   "ensemble": 6.747,
+   "ewma": 6.999,
+   "lgbm": 6.82,
+   "naive": 7.274,
+   "ridge": 6.781,
+   "xgb": 6.86
+  },
+  "r2": {
+   "eb": 0.308,
+   "ensemble": 0.344,
+   "ewma": 0.294,
+   "lgbm": 0.33,
+   "naive": 0.237,
+   "ridge": 0.337,
+   "xgb": 0.322
+  },
+  "spearman": {
+   "eb": 0.479,
+   "ensemble": 0.515,
+   "ewma": 0.481,
+   "lgbm": 0.503,
+   "naive": 0.462,
+   "ridge": 0.511,
+   "xgb": 0.503
+  },
+  "topk_hit": {
+   "eb": 0.523,
+   "ensemble": 0.539,
+   "ewma": 0.522,
+   "lgbm": 0.529,
+   "naive": 0.511,
+   "ridge": 0.538,
+   "xgb": 0.53
+  }
+ },
+ "draft_all": {
+  "points": {
+   "eb": 103.798,
+   "ensemble": 112.999,
+   "ewma": 101.958,
+   "lgbm": 111.097,
+   "naive": 94.403,
+   "oracle": 213.348,
+   "ridge": 110.652,
+   "xgb": 111.518
+  },
+  "margin": {
+   "eb": 10.041,
+   "ensemble": 19.681,
+   "ewma": 7.839,
+   "lgbm": 17.459,
+   "naive": -0.0,
+   "oracle": 123.28,
+   "ridge": 17.092,
+   "xgb": 17.938
+  },
+  "win_rate": {
+   "eb": 0.619,
+   "ensemble": 0.724,
+   "ewma": 0.592,
+   "lgbm": 0.692,
+   "naive": 0.5,
+   "oracle": 1.0,
+   "ridge": 0.698,
+   "xgb": 0.691
+  }
+ },
+ "draft_hist": {
+  "points": {
+   "eb": 103.682,
+   "ensemble": 112.67,
+   "ewma": 101.718,
+   "lgbm": 110.916,
+   "naive": 94.363,
+   "oracle": 213.353,
+   "ridge": 110.546,
+   "xgb": 111.26
+  },
+  "margin": {
+   "eb": 9.949,
+   "ensemble": 19.374,
+   "ewma": 7.621,
+   "lgbm": 17.325,
+   "naive": -0.0,
+   "oracle": 123.332,
+   "ridge": 17.021,
+   "xgb": 17.707
+  },
+  "win_rate": {
+   "eb": 0.618,
+   "ensemble": 0.721,
+   "ewma": 0.589,
+   "lgbm": 0.69,
+   "naive": 0.5,
+   "oracle": 1.0,
+   "ridge": 0.697,
+   "xgb": 0.688
+  }
+ },
+ "draft_current": {
+  "points": {
+   "eb": 109.36,
+   "ensemble": 128.794,
+   "ewma": 113.495,
+   "lgbm": 119.8,
+   "naive": 96.302,
+   "oracle": 213.078,
+   "ridge": 115.721,
+   "xgb": 123.925
+  },
+  "margin": {
+   "eb": 14.424,
+   "ensemble": 34.39,
+   "ewma": 18.304,
+   "lgbm": 23.919,
+   "naive": -0.0,
+   "oracle": 120.747,
+   "ridge": 20.476,
+   "xgb": 28.992
+  },
+  "win_rate": {
+   "eb": 0.629,
+   "ensemble": 0.877,
+   "ewma": 0.712,
+   "lgbm": 0.788,
+   "naive": 0.5,
+   "oracle": 1.0,
+   "ridge": 0.718,
+   "xgb": 0.847
+  }
+ }
+}

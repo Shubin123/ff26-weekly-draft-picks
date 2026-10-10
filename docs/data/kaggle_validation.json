@@ -1,0 +1,55 @@
+{
+ "pbp_defense_vs_fpa_same_season": {
+  "pass_ypp~WR": 0.433,
+  "pass_ypp~TE": 0.254,
+  "pass_ypp~QB": 0.587,
+  "rush_ypc~RB": 0.505,
+  "td_rate~QB": 0.728
+ },
+ "pbp_defense_prev_season_vs_fpa": {
+  "pass_ypp~WR": 0.215,
+  "pass_ypp~TE": 0.191,
+  "pass_ypp~QB": 0.282,
+  "rush_ypc~RB": 0.188,
+  "td_rate~QB": 0.255
+ },
+ "defense_team_seasons": 256,
+ "ppg_year_over_year_correlation": {
+  "1970-1999": {
+   "QB": {
+    "r": 0.711,
+    "n": 877
+   },
+   "RB": {
+    "r": 0.724,
+    "n": 2803
+   },
+   "WR": {
+    "r": 0.69,
+    "n": 2565
+   },
+   "TE": {
+    "r": 0.703,
+    "n": 1507
+   }
+  },
+  "2000-2024": {
+   "QB": {
+    "r": 0.697,
+    "n": 621
+   },
+   "RB": {
+    "r": 0.778,
+    "n": 2197
+   },
+   "WR": {
+    "r": 0.757,
+    "n": 2736
+   },
+   "TE": {
+    "r": 0.78,
+    "n": 1609
+   }
+  }
+ }
+}
