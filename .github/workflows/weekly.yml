@@ -43,6 +43,8 @@ jobs:
           python scripts/kaggle_validation.py
           python run_pipeline.py --season 2026 --week ${{ steps.wk.outputs.week }}
           cp reports/kaggle_validation.json docs/data/
+      - name: Check every league size was refreshed
+        run: python -m unittest -v tests.test_site_payload
       - uses: actions/setup-node@v4
         with:
           node-version: "22"
