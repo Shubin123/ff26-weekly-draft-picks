@@ -34,10 +34,12 @@ KAGGLE = [
 ]
 NFLVERSE = "https://github.com/nflverse/nflverse-data/releases/download"
 GAMES = "https://github.com/nflverse/nfldata/raw/master/data/games.csv"
+# Kaggle's download endpoint 404s for the default python-requests user agent
+HEADERS = {"User-Agent": "ff26-weekly-draft-picks/1.0 (+https://github.com/Shubin123/ff26-weekly-draft-picks)"}
 
 
 def get(url):
-    r = requests.get(url, timeout=300)
+    r = requests.get(url, headers=HEADERS, timeout=300)
     r.raise_for_status()
     return r.content
 

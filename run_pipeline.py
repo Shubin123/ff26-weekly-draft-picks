@@ -99,9 +99,10 @@ def draft_backtest(oof, season, week):
             continue  # target week not finished
         g = g[~g.injury.isin(["Out", "Doubtful"])].copy()
         g["oracle"] = g.actual
-        res = draft.draft_eval(g, strats)
-        for k, v in res.items():
-            rows.append(dict(season=int(s), week=int(w), strategy=k.replace("_exp", ""), **v))
+        for n in draft.TEAM_SIZES:
+            res = draft.draft_eval(g, strats, teams=n)
+            for k, v in res.items():
+                rows.append(dict(teams=n, season=int(s), week=int(w), strategy=k.replace("_exp", ""), **v))
     return pd.DataFrame(rows)
 
 
@@ -162,11 +163,15 @@ def main():
     hist = acc[acc.season < a.season]
     summ_hist = hist.groupby("model")[["mae", "rmse", "r2", "spearman", "topk_hit"]].mean()
     cur = acc[acc.season == a.season].set_index("model")
-    dsum = dr.groupby("strategy")[["points", "margin", "win_rate"]].mean()
-    dsum_hist = dr[dr.season < a.season].groupby("strategy")[["points", "margin", "win_rate"]].mean()
-    dsum_cur = dr[dr.season == a.season].groupby("strategy")[["points", "margin", "win_rate"]].mean()
-    cur_weeks = dr[dr.season == a.season].pivot_table(index="week", columns="strategy",
-                                                      values=["win_rate", "points"])
+    dcols = ["points", "margin", "win_rate"]
+    dr12 = dr[dr.teams == draft.TEAMS]  # summary.json / console keep the 12-team default
+    dsum = dr12.groupby("strategy")[dcols].mean()
+    dsum_hist = dr12[dr12.season < a.season].groupby("strategy")[dcols].mean()
+    dsum_cur = dr12[dr12.season == a.season].groupby("strategy")[dcols].mean()
+    by_size_hist = dr[dr.season < a.season].groupby(["teams", "strategy"])[dcols].mean()
+    by_size_cur = dr[dr.season == a.season].groupby(["teams", "strategy"])[dcols].mean()
+    cur_weeks = dr12[dr12.season == a.season].pivot_table(index="week", columns="strategy",
+                                                          values=["win_rate", "points"])
     payload = {
         "season": a.season, "week": a.week,
         "generated": time.strftime("%Y-%m-%d %H:%M"),
@@ -176,8 +181,8 @@ def main():
         "accuracy_hist": to_records(summ_hist.reset_index()),
         "accuracy_current": to_records(cur.reset_index()),
         "draft_by_week": to_records(dr),
-        "draft_hist": to_records(dsum_hist.reset_index()),
-        "draft_current": to_records(dsum_cur.reset_index()),
+        "draft_hist": to_records(by_size_hist.reset_index()),
+        "draft_current": to_records(by_size_cur.reset_index()),
         "stack_weights": {str(k): v for k, v in weights.items()},
         "feature_importance": to_records(imp.head(25).rename("gain").reset_index()
                                          .rename(columns={"index": "feature"})),
@@ -189,7 +194,11 @@ def main():
     (SITE / "site.json").write_text(json.dumps(payload))
     summary = {"accuracy_all": summ.round(3).to_dict(), "accuracy_hist": summ_hist.round(3).to_dict(),
                "draft_all": dsum.round(3).to_dict(), "draft_hist": dsum_hist.round(3).to_dict(),
-               "draft_current": dsum_cur.round(3).to_dict()}
+               "draft_current": dsum_cur.round(3).to_dict(),
+               "draft_hist_by_teams": {str(n): g.droplevel(0).round(3).to_dict()
+                                       for n, g in by_size_hist.groupby(level=0)},
+               "draft_current_by_teams": {str(n): g.droplevel(0).round(3).to_dict()
+                                          for n, g in by_size_cur.groupby(level=0)}}
     (REPORTS / "summary.json").write_text(json.dumps(summary, indent=1))
     log("done")
     print(summ_hist.round(3).to_string())

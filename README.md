@@ -8,7 +8,7 @@ Each week you get:
 
 - **A draft board** ranked by value over replacement (VORP), with positional tiers, a 10th–90th percentile floor/ceiling, the chance the player suits up, the Vegas team total and the matchup.
 - **A pick sheet by draft slot**: who to take in each of the 7 rounds from pick 1 to 12, assuming the rest of the league drafts off season-average rankings.
-- **A league-size slider** (10, 11 or 12 teams) on the live board. It recomputes replacement levels and VORP, re-ranks the board and switches to a pick sheet simulated for that many teams. The backtest numbers below are still for 12 teams.
+- **A league-size slider** (8, 10, 12, 14 or 16 teams) on the live board. Replacement levels scale with league size (QB n, RB 2n+5, WR 2n+6, TE n+1), so the board re-ranks. The pick sheet and the backtest charts switch to drafts simulated and backtested for that many teams. The tables below are the 12-team default.
 - **A scorecard**: how the picks did in every completed 2026 week and across 11 earlier seasons.
 
 ## Results
@@ -27,6 +27,18 @@ These are the goal metric. Each week a 12-team draft is run once from every slot
 | EWMA | 58.9% | +7.6 | 71.2% |
 | Season average (field) | 50.0% | 0 | 50.0% |
 | Oracle (hindsight ceiling) | 100% | +123 | 100% |
+
+**By league size** (ensemble vs. a season-average field, full run for week 7; the projections are the same, and the drafts, VORP and backtest are run per size):
+
+| Teams | Win rate 2015–25 | Pts over field 2015–25 | Win rate 2026 |
+|---|---|---|---|
+| 8 | 68.8% | +17.1 | 71.7% |
+| 10 | 70.8% | +19.0 | 76.1% |
+| 12 | 72.0% | +19.7 | 84.0% |
+| 14 | 72.4% | +19.2 | 78.5% |
+| 16 | 72.9% | +19.6 | 76.5% |
+
+The strategy table above is from the week-5 run; the 12-team row here is the week-7 run, after more 2026 games went into the data.
 
 The ensemble beats the consensus field in every individual season: 2015 0.71 · 2016 0.70 · 2017 0.75 · 2018 0.80 · 2019 0.78 · 2020 0.63 · 2021 0.73 · 2022 0.76 · 2023 0.73 · 2024 0.68 · 2025 0.72 · 2026 0.82.
 
@@ -95,7 +107,7 @@ The 2026 stack weights lean on ridge and LightGBM. For WRs they are ridge 0.54, 
 python -m venv .venv && .venv/bin/pip install -r requirements.txt
 .venv/bin/python scripts/fetch_data.py --season 2026      # Kaggle + nflverse, no API key needed
 .venv/bin/python scripts/kaggle_validation.py
-.venv/bin/python run_pipeline.py --season 2026 --week 5  # about 4 minutes
+.venv/bin/python run_pipeline.py --season 2026 --week 7  # about 8 minutes (5 league sizes)
 cp reports/kaggle_validation.json docs/data/
 ```
 
@@ -104,6 +116,15 @@ The outputs are:
 - `data/processed/draft_board_2026_wNN.csv`: one board per week.
 - `reports/accuracy_by_season.csv` and `reports/draft_sim_by_week.csv`: the backtests.
 - `docs/data/site.json`: everything the site reads.
+
+Tests (CI runs both on every weekly refresh, before committing):
+
+```bash
+.venv/bin/python -m unittest discover tests      # draft logic per league size
+cd tests && npm install && npm test              # drives the slider in headless Chrome
+```
+
+On macOS LightGBM needs OpenMP: `brew install libomp`.
 
 A GitHub Action (`.github/workflows/weekly.yml`) rebuilds the board every Tuesday after Monday Night Football and commits it. GitHub Pages serves `docs/`.
 

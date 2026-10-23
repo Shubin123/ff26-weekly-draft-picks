@@ -4,3 +4,4 @@ data/raw/
 data/processed/*.parquet
 reports/run.log
 .DS_Store
+node_modules/

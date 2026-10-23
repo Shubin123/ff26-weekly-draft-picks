@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Weekly Draft Board 2026</title>
 <meta name="description" content="Weekly fantasy football (PPR) draft board for the 2026 NFL season, built from Kaggle + nflverse data with a stacked ensemble of statistical models and backtested 2015-2026.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Crect width='16' height='16' rx='3' fill='%231c5cab'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -134,8 +135,8 @@ header.top .wrap>div:last-child{display:flex;align-items:center}
     <h1>Week <em id="hWeek">–</em> draft picks</h1>
     <p class="lede">A fresh <span class="nTeams">12</span>-team PPR snake draft every week. Projections come from a stacked ensemble of six statistical models trained on 2012–2025 (Kaggle) and updated with live 2026 box scores (nflverse), multiplied by each player's modelled chance of suiting up.</p>
     <div class="league"><label for="teamsRange">League size</label>
-      <input type="range" id="teamsRange" min="10" max="12" step="1" value="12" list="teamTicks">
-      <datalist id="teamTicks"><option value="10"></option><option value="11"></option><option value="12"></option></datalist>
+      <input type="range" id="teamsRange" min="8" max="16" step="2" value="12" list="teamTicks">
+      <datalist id="teamTicks"><option value="8"></option><option value="10"></option><option value="12"></option><option value="14"></option><option value="16"></option></datalist>
       <output id="teamsOut" for="teamsRange">12 teams</output></div>
     <div class="tiles" id="tiles"></div>
   </div>
@@ -160,11 +161,11 @@ header.top .wrap>div:last-child{display:flex;align-items:center}
 
   <section id="backtest">
     <h2>Does it win drafts?</h2>
-    <p class="sub">Rolling-origin backtest: each season is predicted by models trained only on earlier seasons, and every week we run a 12-team draft from all 12 slots. Each strategy drafts against 11 opponents using season-average rankings. Players who don't play score zero, just as in a real league.</p>
+    <p class="sub">Rolling-origin backtest: each season is predicted by models trained only on earlier seasons, and every week we run a <span class="nTeams">12</span>-team draft from all <span class="nTeams">12</span> slots (backtested separately for 8, 10, 12, 14 and 16 teams; use the league-size slider). Each strategy drafts against <span class="nOthers">11</span> opponents using season-average rankings. Players who don't play score zero, just as in a real league.</p>
     <div class="grid2">
       <div class="card">
-        <h3>Head-to-head win rate vs. the field, 2015–2025</h3>
-        <p class="note">Share of the 11 opponents each strategy outscores; 50% = no edge. "Oracle" knows the actual results and marks the ceiling.</p>
+        <h3>Head-to-head win rate vs. the field, 2015–2025 · <span class="nTeams">12</span> teams</h3>
+        <p class="note">Share of the <span class="nOthers">11</span> opponents each strategy outscores; 50% = no edge. "Oracle" knows the actual results and marks the ceiling.</p>
         <div id="winChart"></div>
       </div>
       <div class="card">
@@ -231,17 +232,22 @@ $("#repoLink").href = repo;
 
 const NAMES = {naive:"Season average", ewma:"EWMA", eb:"Empirical Bayes", ridge:"Ridge", lgbm:"LightGBM", xgb:"XGBoost Tweedie", ensemble:"Stacked ensemble", oracle:"Oracle (hindsight)"};
 
-fetch("data/site.json").then(r => r.json()).then(D => {
+// no-cache: Pages caches for 10 min, and a stale payload would not match this page
+fetch("data/site.json", {cache: "no-cache"}).then(r => r.json()).then(D => {
   const W = D.week, S = D.season;
   $("#hWeek").textContent = W;
   $("#stamp").textContent = `${S} season · week ${W} · updated ${D.generated}`;
   $("#gen").textContent = D.generated;
   document.querySelectorAll(".wk").forEach(e => e.textContent = W);
 
-  const dh = Object.fromEntries(D.draft_hist.map(r => [r.strategy, r]));
-  const dc = Object.fromEntries(D.draft_current.map(r => [r.strategy, r]));
+  // draft results are per league size; older payloads only have 12-team rows without a teams field
+  const forTeams = rows => rows.filter(r => (r.teams ?? D.league.teams) === teams);
+  let dh, dc;
   const ah = Object.fromEntries(D.accuracy_hist.map(r => [r.model, r]));
   const ac = Object.fromEntries(D.accuracy_current.map(r => [r.model, r]));
+  function drawTiles() {
+  dh = Object.fromEntries(forTeams(D.draft_hist).map(r => [r.strategy, r]));
+  dc = Object.fromEntries(forTeams(D.draft_current).map(r => [r.strategy, r]));
   const tiles = [
     ["Backtest win rate", pct(dh.ensemble?.win_rate), `vs ${pct(dh.naive?.win_rate)} for season average, 2015–25`],
     ["2026 win rate", pct(dc.ensemble?.win_rate), `weeks 1–${W - 1}, same field`],
@@ -249,6 +255,10 @@ fetch("data/site.json").then(r => r.json()).then(D => {
     ["2026 rank corr.", fmt(ac.ensemble?.spearman, 2), `Spearman within position (hist ${fmt(ah.ensemble?.spearman, 2)})`],
   ];
   $("#tiles").innerHTML = tiles.map(([k, v, d]) => `<div class="tile"><div class="k">${k}</div><div class="v">${v}</div><div class="d">${d}</div></div>`).join("");
+  }
+
+  let teams = D.league.teams;
+  drawTiles();
 
   // ---------- board ----------
   let week = W, pos = "ALL", q = "", sortKey = "overall_rank", sortDir = 1;
@@ -258,13 +268,26 @@ fetch("data/site.json").then(r => r.json()).then(D => {
   $("#weekSeg").onclick = e => { const b = e.target.closest("button"); if (!b) return; week = +b.dataset.w; [...$("#weekSeg").children].forEach(x => x.setAttribute("aria-pressed", x === b)); drawBoard(); drawPicks(); };
 
   // ---------- league size: re-rank boards by VORP for that many teams ----------
-  const sizes = D.league.team_sizes || [D.league.teams];
-  let teams = D.league.teams;
+  // older payloads: no team_sizes, slot_picks keyed by week for 12 teams only
+  if (!D.league.team_sizes) D.slot_picks = {[D.league.teams]: D.slot_picks};
   const range = $("#teamsRange");
-  range.min = Math.min(...sizes); range.max = Math.max(...sizes); range.value = teams;
+  const sizes = D.league.team_sizes || [D.league.teams];
+  if (sizes.length > 1) { range.min = sizes[0]; range.max = sizes[sizes.length - 1]; range.step = sizes[1] - sizes[0]; }
+  range.value = teams;
+  // same replacement ranks as draft.repl_rank, used when the payload has no vorp_{n}
+  const repl = n => ({QB: n, RB: n * 2 + 5, WR: n * 2 + 6, TE: n + 1});
+  function vorpFor(b, n) {
+    const lvl = {};
+    for (const [p, k] of Object.entries(repl(n))) {
+      const s = b.filter(r => r.position === p).map(r => r.proj).sort((x, y) => y - x);
+      lvl[p] = s.length ? s[Math.min(k, s.length - 1)] : 0;
+    }
+    return r => r.proj - lvl[r.position];
+  }
   function applyTeams() {
     Object.values(D.boards).forEach(b => {
-      b.forEach(r => r.vorp = r["vorp_" + teams] ?? r.vorp);
+      const v = vorpFor(b, teams);
+      b.forEach(r => r.vorp = r["vorp_" + teams] ?? v(r));
       [...b].sort((x, y) => y.vorp - x.vorp).forEach((r, i) => r.overall_rank = i + 1);
     });
     $("#teamsOut").textContent = teams + " teams";
@@ -274,7 +297,7 @@ fetch("data/site.json").then(r => r.json()).then(D => {
     $("#slotSel").innerHTML = Array.from({length: teams}, (_, i) => `<option value="${i + 1}">Pick ${i + 1}</option>`).join("");
     $("#slotSel").value = cur;
   }
-  range.oninput = () => { teams = +range.value; applyTeams(); drawBoard(); drawPicks(); };
+  range.oninput = () => { teams = +range.value; applyTeams(); drawBoard(); drawPicks(); drawTiles(); drawCharts(); };
   $("#posSeg").onclick = e => { const b = e.target.closest("button"); if (!b) return; pos = b.dataset.p; [...$("#posSeg").children].forEach(x => x.setAttribute("aria-pressed", x === b)); drawBoard(); };
   $("#q").oninput = e => { q = e.target.value.toLowerCase(); drawBoard(); };
   const cols = [
@@ -315,6 +338,7 @@ fetch("data/site.json").then(r => r.json()).then(D => {
   $("#slotSel").onchange = drawPicks;
   function drawPicks() {
     const ids = ((D.slot_picks[teams] || {})[week] || {})[$("#slotSel").value] || [];
+    if (!ids.length) { $("#picks").innerHTML = `<p class="muted" style="grid-column:1/-1;margin:0">No ${teams}-team pick sheet in this week's data yet.</p>`; return; }
     const byId = Object.fromEntries(D.boards[week].map(r => [r.player_id, r]));
     $("#picks").innerHTML = ids.map((id, i) => { const r = byId[id] || {name: id, position: "", team: ""}; return `<div class="pick"><div class="rd">ROUND ${i + 1}</div><div class="nm" title="${r.name}">${r.name}</div><div class="pr"><span class="pos ${r.position}">${r.position}</span> ${r.team} · ${fmt(r.proj)}${r.played && week <= W && (week < W || r.played) ? ` → ${fmt(r.actual)}` : ""}</div></div>`; }).join("");
   }
@@ -354,12 +378,12 @@ fetch("data/site.json").then(r => r.json()).then(D => {
     const order = ["oracle", "ensemble", "lgbm", "xgb", "ridge", "eb", "ewma", "naive"];
     hbar($("#winChart"), order.filter(k => dh[k]).map(k => dh[k]), "win_rate", 0.5);
     const bySeason = {};
-    D.draft_by_week.filter(r => r.season < S).forEach(r => { (bySeason[r.season] ??= {}); (bySeason[r.season][r.strategy] ??= []).push(r.win_rate); });
+    forTeams(D.draft_by_week).filter(r => r.season < S).forEach(r => { (bySeason[r.season] ??= {}); (bySeason[r.season][r.strategy] ??= []).push(r.win_rate); });
     const ss = Object.keys(bySeason).sort();
     const avg = a => a.reduce((x, y) => x + y, 0) / a.length;
     const e = ss.map(s => avg(bySeason[s].ensemble)), n = ss.map(s => avg(bySeason[s].naive));
     lines($("#seasonChart"), ss, [{n: "Ensemble", c: "var(--qb)", v: e}, {n: "Season average", c: "var(--rb)", v: n}], pct, 0.3, 0.8);
-    const cw = D.draft_by_week.filter(r => r.season === S);
+    const cw = forTeams(D.draft_by_week).filter(r => r.season === S);
     const wk = [...new Set(cw.map(r => r.week))].sort((a, b) => a - b);
     const get = st => wk.map(w => (cw.find(r => r.week === w && r.strategy === st) || {}).win_rate);
     lines($("#w26Chart"), wk.map(w => "Wk " + w), [{n: "Ensemble", c: "var(--qb)", v: get("ensemble")}, {n: "Season average", c: "var(--rb)", v: get("naive")}], pct, 0, 1);
@@ -382,7 +406,7 @@ fetch("data/site.json").then(r => r.json()).then(D => {
   accTable($("#accTbl"), D.accuracy_hist);
   accTable($("#acc26"), D.accuracy_current);
 
-  fetch("data/kaggle_validation.json").then(r => r.json()).then(K => {
+  fetch("data/kaggle_validation.json", {cache: "no-cache"}).then(r => r.json()).then(K => {
     const a = K.pbp_defense_vs_fpa_same_season, b = K.pbp_defense_prev_season_vs_fpa, y = K.ppg_year_over_year_correlation["2000-2024"];
     $("#kv").innerHTML = `<b>Cross-checks.</b> Play-by-play (mexwell, ${K.defense_team_seasons} defense-seasons) agrees with our box-score matchup feature within a season (pass yards/play vs WR points allowed r = ${a["pass_ypp~WR"]}, rush yards/carry vs RB r = ${a["rush_ypc~RB"]}) but only weakly carries into the next season (r ≈ ${b["pass_ypp~WR"]}–${b["pass_ypp~QB"]}), so the matchup feature is an in-season EWMA. Year-over-year PPG correlation from 1970–2024 (heefjones), 2000–24: QB ${y.QB.r}, RB ${y.RB.r}, WR ${y.WR.r}, TE ${y.TE.r}. Last season is informative but noisy, hence the shrinkage.`;
   }).catch(() => {});

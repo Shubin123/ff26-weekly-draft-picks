@@ -1,0 +1,7 @@
+{
+  "name": "ff26-site-tests",
+  "private": true,
+  "type": "module",
+  "scripts": { "test": "node site.test.mjs" },
+  "devDependencies": { "puppeteer-core": "23.11.1" }
+}

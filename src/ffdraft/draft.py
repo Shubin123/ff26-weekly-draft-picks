@@ -1,13 +1,13 @@
 """Weekly draft logic: value over replacement, tiers, and snake-draft simulation.
 
-League default: 12 teams, PPR, lineup QB / RB / RB / WR / WR / TE / FLEX(RB-WR-TE),
+League default: 12 teams (8-16 supported), PPR, lineup QB / RB / RB / WR / WR / TE / FLEX(RB-WR-TE),
 7-round snake draft held fresh every week.
 """
 import numpy as np
 import pandas as pd
 
 TEAMS = 12
-TEAM_SIZES = (10, 11, 12)  # league sizes the site's slider offers
+TEAM_SIZES = (8, 10, 12, 14, 16)  # common league sizes: backtested and offered on the site
 SLOTS = {"QB": 1, "RB": 2, "WR": 2, "TE": 1}
 FLEX = {"RB", "WR", "TE"}
 ROUNDS = sum(SLOTS.values()) + 1
@@ -85,7 +85,7 @@ def snake_draft(pos, rank_by_team, teams=TEAMS, rounds=ROUNDS):
     return rosters
 
 
-def draft_eval(week_df, strategy_cols, field_col="naive_exp"):
+def draft_eval(week_df, strategy_cols, field_col="naive_exp", teams=TEAMS):
     """Score each strategy by drafting from every slot against a field that drafts by
     `field_col` (season-average consensus). Returns per-strategy mean lineup points,
     margin over the field average, and head-to-head win rate."""
@@ -94,7 +94,7 @@ def draft_eval(week_df, strategy_cols, field_col="naive_exp"):
     actual = d.actual.to_numpy()
 
     def order(col):
-        v = vorp(d, col).to_numpy()
+        v = vorp(d, col, teams).to_numpy()
         return list(np.argsort(-v, kind="stable"))
 
     field = order(field_col)
@@ -102,10 +102,10 @@ def draft_eval(week_df, strategy_cols, field_col="naive_exp"):
     for col in strategy_cols:
         mine = order(col)
         pts, margin, wins = [], [], []
-        for slot in range(TEAMS):
-            prefs = [field] * TEAMS
+        for slot in range(teams):
+            prefs = [field] * teams
             prefs[slot] = mine
-            rosters = snake_draft(pos, prefs)
+            rosters = snake_draft(pos, prefs, teams)
             score = np.array([actual[r].sum() for r in rosters])
             others = np.delete(score, slot)
             pts.append(score[slot])
