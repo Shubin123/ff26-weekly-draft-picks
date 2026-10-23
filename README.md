@@ -28,15 +28,15 @@ These are the goal metric. Each week a 12-team draft is run once from every slot
 | Season average (field) | 50.0% | 0 | 50.0% |
 | Oracle (hindsight ceiling) | 100% | +123 | 100% |
 
-**By league size** (ensemble vs. a season-average field, full run for week 7; the projections are the same, and the drafts, VORP and backtest are run per size):
+**By league size** (ensemble vs. a season-average field, week-7 CI run; the projections are the same, and the drafts, VORP and backtest are run per size):
 
 | Teams | Win rate 2015–25 | Pts over field 2015–25 | Win rate 2026 |
 |---|---|---|---|
-| 8 | 68.8% | +17.1 | 71.7% |
-| 10 | 70.8% | +19.0 | 76.1% |
-| 12 | 72.0% | +19.7 | 84.0% |
-| 14 | 72.4% | +19.2 | 78.5% |
-| 16 | 72.9% | +19.6 | 76.5% |
+| 8 | 69.0% | +17.7 | 73.5% |
+| 10 | 71.3% | +19.3 | 81.3% |
+| 12 | 72.2% | +19.7 | 88.0% |
+| 14 | 72.2% | +19.4 | 80.6% |
+| 16 | 72.7% | +20.0 | 77.2% |
 
 The strategy table above is from the week-5 run; the 12-team row here is the week-7 run, after more 2026 games went into the data.
 
