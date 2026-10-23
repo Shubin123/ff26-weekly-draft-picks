@@ -7,16 +7,21 @@ import numpy as np
 import pandas as pd
 
 TEAMS = 12
+TEAM_SIZES = (10, 11, 12)  # league sizes the site's slider offers
 SLOTS = {"QB": 1, "RB": 2, "WR": 2, "TE": 1}
 FLEX = {"RB", "WR", "TE"}
 ROUNDS = sum(SLOTS.values()) + 1
 # replacement = first player outside the starters league-wide (flex split ~ RB 40 / WR 50 / TE 10)
-REPL_RANK = {"QB": TEAMS, "RB": TEAMS * 2 + 5, "WR": TEAMS * 2 + 6, "TE": TEAMS + 1}
+def repl_rank(teams=TEAMS):
+    return {"QB": teams, "RB": teams * 2 + 5, "WR": teams * 2 + 6, "TE": teams + 1}
 
 
-def vorp(df, col="proj"):
+REPL_RANK = repl_rank()
+
+
+def vorp(df, col="proj", teams=TEAMS):
     out = pd.Series(0.0, index=df.index)
-    for p, r in REPL_RANK.items():
+    for p, r in repl_rank(teams).items():
         m = df.position == p
         s = df.loc[m, col].sort_values(ascending=False)
         repl = s.iloc[min(r, len(s) - 1)] if len(s) else 0.0
@@ -115,8 +120,8 @@ def recommend_by_slot(board, teams=TEAMS, rounds=ROUNDS):
     drafts by consensus (season average) - a 'who to take at pick N' sheet."""
     d = board.reset_index(drop=True)
     pos = d.position.to_numpy()
-    mine = list(np.argsort(-d.vorp.to_numpy(), kind="stable"))
-    field = list(np.argsort(-vorp(d, "naive_exp").to_numpy(), kind="stable"))
+    mine = list(np.argsort(-vorp(d, "proj", teams).to_numpy(), kind="stable"))
+    field = list(np.argsort(-vorp(d, "naive_exp", teams).to_numpy(), kind="stable"))
     out = {}
     for slot in range(teams):
         prefs = [field] * teams

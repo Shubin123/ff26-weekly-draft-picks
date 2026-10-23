@@ -8,6 +8,7 @@ Each week you get:
 
 - **A draft board** ranked by value over replacement (VORP), with positional tiers, a 10th–90th percentile floor/ceiling, the chance the player suits up, the Vegas team total and the matchup.
 - **A pick sheet by draft slot**: who to take in each of the 7 rounds from pick 1 to 12, assuming the rest of the league drafts off season-average rankings.
+- **A league-size slider** (10, 11 or 12 teams) on the live board. It recomputes replacement levels and VORP, re-ranks the board and switches to a pick sheet simulated for that many teams. The backtest numbers below are still for 12 teams.
 - **A scorecard**: how the picks did in every completed 2026 week and across 11 earlier seasons.
 
 ## Results

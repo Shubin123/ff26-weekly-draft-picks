@@ -109,11 +109,13 @@ def board(oof, season, week, final_cols):
     b = oof[(oof.season == season) & (oof.week == week)].copy()
     b = b[~b.injury.isin(["Out"])]
     b["vorp"] = draft.vorp(b, "proj")
+    for n in draft.TEAM_SIZES:
+        b[f"vorp_{n}"] = draft.vorp(b, "proj", teams=n)
     b["tier"] = draft.tiers(b, "proj")
     b = b.sort_values("vorp", ascending=False)
     b["overall_rank"] = np.arange(1, len(b) + 1)
     b["pos_rank"] = b.groupby("position").proj.rank(ascending=False, method="first").astype(int)
-    slots = draft.recommend_by_slot(b)
+    slots = {n: draft.recommend_by_slot(b, teams=n) for n in draft.TEAM_SIZES}
     b = b[b.pos_rank <= b.position.map({"QB": 32, "RB": 60, "WR": 80, "TE": 32})]
     return b[final_cols], slots
 
@@ -147,7 +149,7 @@ def main():
             "is_home", "implied_total", "spread", "def_ratio", "injury", "p_play", "proj",
             "floor", "ceiling", "vorp", "naive_exp", "ewma", "eb", "ridge", "lgbm", "xgb",
             "ensemble", "std_ppr", "ewf_snap_pct", "ewf_tgt_share", "ewf_carries",
-            "played", "actual"]
+            "played", "actual"] + [f"vorp_{n}" for n in draft.TEAM_SIZES]
     boards, slot_sheets = {}, {}
     for w in range(1, a.week + 1):
         b, slots = board(oof, a.season, w, cols)
@@ -168,8 +170,8 @@ def main():
     payload = {
         "season": a.season, "week": a.week,
         "generated": time.strftime("%Y-%m-%d %H:%M"),
-        "league": {"teams": draft.TEAMS, "slots": draft.SLOTS, "flex": sorted(draft.FLEX),
-                   "scoring": "PPR"},
+        "league": {"teams": draft.TEAMS, "team_sizes": list(draft.TEAM_SIZES), "slots": draft.SLOTS,
+                   "flex": sorted(draft.FLEX), "scoring": "PPR"},
         "accuracy_by_season": to_records(acc),
         "accuracy_hist": to_records(summ_hist.reset_index()),
         "accuracy_current": to_records(cur.reset_index()),
@@ -180,7 +182,9 @@ def main():
         "feature_importance": to_records(imp.head(25).rename("gain").reset_index()
                                          .rename(columns={"index": "feature"})),
         "boards": {str(w): to_records(b) for w, b in boards.items()},
-        "slot_picks": {str(w): {str(k): v for k, v in s.items()} for w, s in slot_sheets.items()},
+        # slot_picks[teams][week][slot] -> player_ids
+        "slot_picks": {str(n): {str(w): {str(k): v for k, v in s[n].items()} for w, s in slot_sheets.items()}
+                       for n in draft.TEAM_SIZES},
     }
     (SITE / "site.json").write_text(json.dumps(payload))
     summary = {"accuracy_all": summ.round(3).to_dict(), "accuracy_hist": summ_hist.round(3).to_dict(),

@@ -69,6 +69,10 @@ section .sub{color:var(--ink-2);margin:0 0 18px;max-width:760px}
 .seg button[aria-pressed="true"]{background:var(--ink);color:var(--bg)}
 input[type=search],select{background:var(--surface);color:var(--ink);border:1px solid var(--line);border-radius:8px;padding:6px 10px;font:inherit;font-size:14px}
 input[type=search]{min-width:0;flex:1 1 180px;max-width:280px}
+.league{display:flex;flex-wrap:wrap;align-items:center;gap:10px 14px;margin:20px 0 0;background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:10px 14px;max-width:460px}
+.league label{font:500 12px/1 "IBM Plex Mono",monospace;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-3)}
+.league input[type=range]{flex:1 1 140px;min-width:0;accent-color:var(--accent)}
+.league output{font:700 24px/1 "Barlow Condensed",sans-serif;min-width:84px}
 .tablebox{background:var(--surface);border:1px solid var(--line);border-radius:10px;overflow:auto;max-height:640px}
 table{border-collapse:collapse;width:100%;font-size:14px}
 th,td{padding:7px 10px;text-align:left;white-space:nowrap;border-bottom:1px solid var(--line)}
@@ -128,13 +132,17 @@ header.top .wrap>div:last-child{display:flex;align-items:center}
   <div class="hero">
     <div class="eyebrow" id="stamp">Loading…</div>
     <h1>Week <em id="hWeek">–</em> draft picks</h1>
-    <p class="lede">A fresh 12-team PPR snake draft every week. Projections come from a stacked ensemble of six statistical models trained on 2012–2025 (Kaggle) and updated with live 2026 box scores (nflverse), multiplied by each player's modelled chance of suiting up.</p>
+    <p class="lede">A fresh <span class="nTeams">12</span>-team PPR snake draft every week. Projections come from a stacked ensemble of six statistical models trained on 2012–2025 (Kaggle) and updated with live 2026 box scores (nflverse), multiplied by each player's modelled chance of suiting up.</p>
+    <div class="league"><label for="teamsRange">League size</label>
+      <input type="range" id="teamsRange" min="10" max="12" step="1" value="12" list="teamTicks">
+      <datalist id="teamTicks"><option value="10"></option><option value="11"></option><option value="12"></option></datalist>
+      <output id="teamsOut" for="teamsRange">12 teams</output></div>
     <div class="tiles" id="tiles"></div>
   </div>
 
   <section id="board">
     <h2>Draft board</h2>
-    <p class="sub">Ranked by value over replacement (VORP), so a QB or TE only goes early when he beats the 12th-best at his spot by more than a RB/WR beats theirs. Bars show the 10th–90th percentile range if he plays; dots mark actual points for finished games.</p>
+    <p class="sub">Ranked by value over replacement (VORP), so a QB or TE only goes early when he beats the <span class="nTeams">12</span>th-best at his spot by more than a RB/WR beats theirs. Bars show the 10th–90th percentile range if he plays; dots mark actual points for finished games.</p>
     <div class="controls">
       <div class="seg" id="weekSeg" role="group" aria-label="Week"></div>
       <div class="seg" id="posSeg" role="group" aria-label="Position"></div>
@@ -145,7 +153,7 @@ header.top .wrap>div:last-child{display:flex;align-items:center}
 
   <section id="slots">
     <h2>Pick sheet by draft slot</h2>
-    <p class="sub">Who this model takes in each round from your slot, assuming the other 11 managers draft off season-average rankings (a typical consensus). Lineup: QB · RB · RB · WR · WR · TE · FLEX.</p>
+    <p class="sub">Who this model takes in each round from your slot, assuming the other <span class="nOthers">11</span> managers draft off season-average rankings (a typical consensus). Lineup: QB · RB · RB · WR · WR · TE · FLEX.</p>
     <div class="controls"><label for="slotSel" class="muted">Your slot</label> <select id="slotSel"></select></div>
     <div class="picks" id="picks"></div>
   </section>
@@ -192,7 +200,7 @@ header.top .wrap>div:last-child{display:flex;align-items:center}
       <p><b>No look-ahead.</b> Each candidate player-week only sees games before that week (as-of joins). The candidate pool is everyone active in the last three weeks (plus last year's regulars early on), on their last known team. Players ruled Out are removed, as you'd do on draft day.</p>
       <p><b>Features.</b> Fast and slow EWMAs and season-to-date averages of points, targets, carries, air yards, snap share, target/rush/air-yard share; last season's per-game line; team pass/rush volume; opponent points-allowed ratio by position; Vegas implied team total and spread; age, experience, draft capital, combine speed score; injury designation.</p>
       <p><b>Models.</b> Season average · EWMA · empirical-Bayes shrinkage (method-of-moments σ²/τ² per position) · per-position ridge · LightGBM (with q10/q90 quantile models for floor and ceiling) · XGBoost Tweedie. A per-position non-negative least-squares stack combines them, with weights fit only on earlier seasons' out-of-sample predictions. A logistic model estimates P(plays); projection = P(plays) × points-if-active.</p>
-      <p><b>Draft logic.</b> VORP against the replacement level for a 12-team league (QB12, RB29, WR30, TE13), positional tiers wherever the projection drops more than 1.25 points, and a snake-draft simulator that fills QB/RB/RB/WR/WR/TE/FLEX.</p>
+      <p><b>Draft logic.</b> VORP against the replacement level for the league size you pick (12 teams: QB12, RB29, WR30, TE13; scales with team count), positional tiers wherever the projection drops more than 1.25 points, and a snake-draft simulator that fills QB/RB/RB/WR/WR/TE/FLEX.</p>
       <p id="kv"><b>Cross-checks.</b> Loading…</p>
     </div>
   </section>
@@ -248,6 +256,25 @@ fetch("data/site.json").then(r => r.json()).then(D => {
   $("#weekSeg").innerHTML = weeks.map(w => `<button data-w="${w}" aria-pressed="${w === week}">Wk ${w}</button>`).join("");
   $("#posSeg").innerHTML = ["ALL", "QB", "RB", "WR", "TE"].map(p => `<button data-p="${p}" aria-pressed="${p === pos}">${p}</button>`).join("");
   $("#weekSeg").onclick = e => { const b = e.target.closest("button"); if (!b) return; week = +b.dataset.w; [...$("#weekSeg").children].forEach(x => x.setAttribute("aria-pressed", x === b)); drawBoard(); drawPicks(); };
+
+  // ---------- league size: re-rank boards by VORP for that many teams ----------
+  const sizes = D.league.team_sizes || [D.league.teams];
+  let teams = D.league.teams;
+  const range = $("#teamsRange");
+  range.min = Math.min(...sizes); range.max = Math.max(...sizes); range.value = teams;
+  function applyTeams() {
+    Object.values(D.boards).forEach(b => {
+      b.forEach(r => r.vorp = r["vorp_" + teams] ?? r.vorp);
+      [...b].sort((x, y) => y.vorp - x.vorp).forEach((r, i) => r.overall_rank = i + 1);
+    });
+    $("#teamsOut").textContent = teams + " teams";
+    document.querySelectorAll(".nTeams").forEach(e => e.textContent = teams);
+    document.querySelectorAll(".nOthers").forEach(e => e.textContent = teams - 1);
+    const cur = Math.min(+$("#slotSel").value || 1, teams);
+    $("#slotSel").innerHTML = Array.from({length: teams}, (_, i) => `<option value="${i + 1}">Pick ${i + 1}</option>`).join("");
+    $("#slotSel").value = cur;
+  }
+  range.oninput = () => { teams = +range.value; applyTeams(); drawBoard(); drawPicks(); };
   $("#posSeg").onclick = e => { const b = e.target.closest("button"); if (!b) return; pos = b.dataset.p; [...$("#posSeg").children].forEach(x => x.setAttribute("aria-pressed", x === b)); drawBoard(); };
   $("#q").oninput = e => { q = e.target.value.toLowerCase(); drawBoard(); };
   const cols = [
@@ -281,13 +308,13 @@ fetch("data/site.json").then(r => r.json()).then(D => {
         <td class="num ${d == null ? "" : d >= 0 ? "delta up" : "delta dn"}">${act}</td></tr>`;
     }).join("");
   }
+  applyTeams();
   drawBoard();
 
   // ---------- pick sheet ----------
-  $("#slotSel").innerHTML = Array.from({length: D.league.teams}, (_, i) => `<option value="${i + 1}">Pick ${i + 1}</option>`).join("");
   $("#slotSel").onchange = drawPicks;
   function drawPicks() {
-    const ids = D.slot_picks[week][$("#slotSel").value] || [];
+    const ids = ((D.slot_picks[teams] || {})[week] || {})[$("#slotSel").value] || [];
     const byId = Object.fromEntries(D.boards[week].map(r => [r.player_id, r]));
     $("#picks").innerHTML = ids.map((id, i) => { const r = byId[id] || {name: id, position: "", team: ""}; return `<div class="pick"><div class="rd">ROUND ${i + 1}</div><div class="nm" title="${r.name}">${r.name}</div><div class="pr"><span class="pos ${r.position}">${r.position}</span> ${r.team} · ${fmt(r.proj)}${r.played && week <= W && (week < W || r.played) ? ` → ${fmt(r.actual)}` : ""}</div></div>`; }).join("");
   }
